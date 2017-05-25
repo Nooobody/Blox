@@ -1,6 +1,13 @@
-<div class="platform" [style.left]="pos_x + '%'" [style.top]="pos_y + '%'">
+<div class="platform" [style.left]="pos_x + '%'" [style.top]="pos_y + '%'" [class.moving_left]="moving_left" [class.moving_right]="moving_right">
   <img src="assets/ufo-ufo.png"
        [style.width]="size + 'px'"
        [style.height]="size + 'px'"
+       [style.margin-left]="-(size / 2) + 'px'" />
+  <img class="engine"
+       *ngIf="moving_left || moving_right"
+       src="assets/ufo-enginemovement.png"
+       [style.width]="size + 'px'"
+       [style.height]="size + 'px'"
+       [style.top]="(size / 1.8) + 'px'"
        [style.margin-left]="-(size / 2) + 'px'" />
 </div>

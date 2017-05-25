@@ -208,7 +208,7 @@ export class PlayAreaComponent implements OnInit {
 
     if (ball.y > 89 && ball.y < 94) { // Platform's Y
       let pixelPlat = this.convertPerX(this.platformX, false);
-      if (realBall.x > pixelPlat - this.platformSize / 2 && realBall.x < pixelPlat + this.platformSize) { // Hits the UFO
+      if (realBall.x > pixelPlat - this.platformSize / 2 && realBall.x < pixelPlat + this.platformSize / 2) { // Hits the UFO
         if (realBall.x > pixelPlat + this.platformSize / 4) {  // Hits the right side
           this.ballVelocity.x = this.ballX;
         }
