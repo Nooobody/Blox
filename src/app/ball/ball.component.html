@@ -5,7 +5,7 @@
        [style.margin-left]="-(size / 2) + 'px'"
        [style.margin-top]="-(size / 2) + 'px'"/>
 </div>
-<div class="ball_trail" *ngFor="let trail of trails" [style.left]="trail.position.x + '%'" [style.top]="trail.position.y + '%'" [style.opacity]="1.0 - (15 / trail.size)">
+<div class="ball_trail" *ngFor="let trail of trails" [style.left]="trail.position.x + '%'" [style.top]="trail.position.y + '%'" [style.opacity]="1.0 - (5.0 / trail.size) * (size / 10)">
   <img src="assets/ufo-ball.png"
       [style.width]="trail.size + 'px'"
       [style.height]="trail.size + 'px'"

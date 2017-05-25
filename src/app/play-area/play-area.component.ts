@@ -2,6 +2,7 @@ import { Component, OnInit, HostListener, ViewChild } from '@angular/core';
 import { Observable } from 'rxjs/Rx';
 import { Block } from '../block/block';
 import { Position } from '../position.interface';
+import Levels from '../levels';
 
 import { BlockComponent } from '../block/block.component';
 import { BallComponent } from '../ball/ball.component';
@@ -33,6 +34,8 @@ export class PlayAreaComponent implements OnInit {
 
   private lastHit = -1;
 
+  private pause : boolean = false;
+
   private ballX = this.startBallX;
   private ballY = this.startBallY;
 
@@ -61,20 +64,17 @@ export class PlayAreaComponent implements OnInit {
   ngOnInit() {
     this.updateSize();
 
-    for (let i = 0; i < 20; i++) {
-      this.addNewBlock({
-        pos: {x: 4.6 * i + 2.2, y: 20},
-        health: 3,
-        color: 0
-      });
-      this.addNewBlock({
-        pos: {x: 4.6 * i + 4.4, y: 27},
-        health: 3,
-        color: -90
-      });
+    let blocks = Levels.level5();
+    for (let block of blocks) {
+      this.addNewBlock(block);
     }
+
     let timer = Observable.timer(0, 20);  // Our ball timer.  TODO: Pause for menu
     timer.subscribe(t => {
+      if (this.pause) {
+        return;
+      }
+
       this.ballPosition.x += this.ballVelocity.x;
       this.ballPosition.y += this.ballVelocity.y;
       this.checkCollisions(this.ballPosition);
@@ -112,23 +112,24 @@ export class PlayAreaComponent implements OnInit {
 
   private checkCollisions(ball) {
     let realBall = this.convertPos(ball, false);
-    if (realBall.x < this.convertPerX(2, false) + 20) { // Left wall
+    if (realBall.x < this.convertPerX(2, false) + this.ballSize / 2) { // Left wall
       this.ballVelocity.x = this.ballX;
       this.lastHit = -1;
     }
-    else if (realBall.x > this.convertPerX(98, false) - 20) { // Right wall
+    else if (realBall.x > this.convertPerX(98, false) - this.ballSize / 2) { // Right wall
       this.ballVelocity.x = -this.ballX;
       this.lastHit = -1;
     }
 
-    if (realBall.y < this.convertPerY(2, false) + 20) { // Ceiling
+    if (realBall.y < this.convertPerY(2, false) + this.ballSize / 2) { // Ceiling
       this.ballVelocity.y = this.ballY;
       this.lastHit = -1;
     }
     else if (ball.y > 96) { // Are we dead?
       this.resetMultiplier();
-      this.ballPosition = {x: 50, y: 50};
-      this.ballVelocity = {x: this.ballX, y: this.ballY};
+      let randomSpawn = Math.random() * 80 + 10;
+      this.ballPosition = {x: randomSpawn, y: 50};
+      this.ballVelocity = {x: Math.random() > 0.5 ? this.ballX : -this.ballX, y: this.ballY};
       this.lastHit = -1;
       return;
     }
@@ -313,6 +314,10 @@ export class PlayAreaComponent implements OnInit {
   }
 
   private movePlatform(x) {
+    if (this.pause) {
+      return;
+    }
+
     let width = window.innerWidth;
 
     let leftSide = width * (2 / 100) + this.platformSize / 2;
@@ -325,6 +330,20 @@ export class PlayAreaComponent implements OnInit {
 
     if (x > rightSide) {
       this.platformX = this.convertNumX(rightSide);
+    }
+  }
+
+  private unPause() {
+    this.pause = false;
+  }
+
+  @HostListener('document:keypress', ['$event'])
+  onKeyPress(event: KeyboardEvent) {
+    if (event.code === "Space") {
+      this.pause = !this.pause;
+    }
+    else {
+      
     }
   }
 

@@ -8,6 +8,8 @@ import { PlayAreaComponent } from './play-area/play-area.component';
 import { BlockComponent } from './block/block.component';
 import { PlatformComponent } from './platform/platform.component';
 import { BallComponent } from './ball/ball.component';
+import { PauseComponent } from './pause/pause.component';
+import { MainMenuComponent } from './main-menu/main-menu.component';
 
 @NgModule({
   declarations: [
@@ -15,7 +17,9 @@ import { BallComponent } from './ball/ball.component';
     PlayAreaComponent,
     BlockComponent,
     PlatformComponent,
-    BallComponent
+    BallComponent,
+    PauseComponent,
+    MainMenuComponent
   ],
   imports: [
     BrowserModule,

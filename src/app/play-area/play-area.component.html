@@ -1,7 +1,7 @@
 <div class="pipe_wrapper">
 <img class="vertical_left" src="assets/ui/verticalpipe.png" />
-<img class="horizontal" src="assets/ui/verticalpipe.png" />
 <img class="vertical_right" src="assets/ui/verticalpipe.png" />
+<img class="horizontal" src="assets/ui/verticalpipe.png" />
 </div>
 <div class="wrapper" (window:resize)="updateSize()">
   <div class="block_wrapper" #block_wrapper>
@@ -10,7 +10,7 @@
     <img src="assets/ufo-block-color-2chip.png" class="hidden" />
     <img src="assets/ufo-block-color-4chip.png" class="hidden" />
   </div>
-  <ball [position]="ballPosition" [size]="ballSize"></ball>
+  <ball [position]="ballPosition" [size]="ballSize" [pause]="pause"></ball>
   <platform [pos_x]="platformX" [size]="platformSize"></platform>
   <!-- <div class="test">
     <div class="debug"
@@ -21,4 +21,10 @@
          [style.left]="convertPerX(ballPosition.x, false) - 5 + 'px'"
          [style.top]="convertPerY(ballPosition.y, false) - 5 + 'px'"></div>
   </div> -->
+</div>
+<div class="pause_menu" *ngIf="pause">
+  <pause (unPauseEmitter)="unPause()"></pause>
+</div>
+<div class="main_menu" *ngIf="false">
+  <main-menu></main-menu>
 </div>

@@ -10,6 +10,7 @@ import { Position } from '../position.interface';
 export class BallComponent implements OnInit {
   @Input() position : Position;
   @Input() size;
+  @Input() pause;
 
   private trails = [];
 
@@ -18,7 +19,10 @@ export class BallComponent implements OnInit {
   ngOnInit() {
     let timer = Observable.timer(0, 100);
     timer.subscribe(t => {
-
+      if (this.pause) {
+        return;
+      }
+      
       this.trails.forEach((part, index, arr) => {
         arr[index].size -= this.size / 10;
       });
