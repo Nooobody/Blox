@@ -11,6 +11,7 @@ export class BlockComponent implements OnInit {
 
   private trustedColor : SafeStyle;
   @Input() block;
+  @Input() size;
 
   constructor(private sanitizer: DomSanitizer) { }
 

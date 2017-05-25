@@ -9,7 +9,8 @@ import { Position } from '../position.interface';
 export class PlatformComponent implements OnInit {
 
   @Input() pos_x;
-  private pos_y : number = 90;
+  @Input() size;
+  private pos_y : number = 88;
 
   constructor() { }
 

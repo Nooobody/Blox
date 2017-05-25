@@ -9,6 +9,7 @@ import { Position } from '../position.interface';
 })
 export class BallComponent implements OnInit {
   @Input() position : Position;
+  @Input() size;
 
   private trails = [];
 
@@ -19,13 +20,13 @@ export class BallComponent implements OnInit {
     timer.subscribe(t => {
 
       this.trails.forEach((part, index, arr) => {
-        arr[index].size -= 4;
+        arr[index].size -= this.size / 10;
       });
 
       let pos = JSON.parse(JSON.stringify({x: this.position.x, y: this.position.y}));
       this.trails.push({
         position: pos,
-        size: 40
+        size: this.size
       });
 
       if (this.trails.length > 7) {
