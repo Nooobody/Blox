@@ -1,0 +1,10 @@
+<div class="ball" [style.left]="position.x + '%'" [style.top]="position.y + '%'">
+  <img src="assets/ufo-ball.png" />
+</div>
+<div class="ball_trail" *ngFor="let trail of trails" [style.left]="trail.position.x + '%'" [style.top]="trail.position.y + '%'" [style.opacity]="1.0 - (20 / trail.size)">
+  <img src="assets/ufo-ball.png"
+      [style.width]="trail.size + 'px'"
+      [style.height]="trail.size + 'px'"
+      [style.margin-left]="-(trail.size / 2) + 'px'"
+      [style.margin-top]="-(trail.size / 2) + 'px'" />
+</div>

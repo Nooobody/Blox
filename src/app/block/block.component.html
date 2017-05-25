@@ -1,0 +1,5 @@
+<div class="block" [style.left]="block.pos.x + '%'" [style.top]="block.pos.y + '%'">
+  <img *ngIf="block.health === 3" src="assets/ufo-block-color.png" [style.filter]="trustedColor" />
+  <img *ngIf="block.health === 2" src="assets/ufo-block-color-2chip.png" [style.filter]="trustedColor" />
+  <img *ngIf="block.health === 1" src="assets/ufo-block-color-4chip.png" [style.filter]="trustedColor" />
+</div>

@@ -1,0 +1,24 @@
+<div class="pipe_wrapper">
+<img class="vertical_left" src="assets/ui/verticalpipe.png" />
+<img class="horizontal" src="assets/ui/verticalpipe.png" />
+<img class="vertical_right" src="assets/ui/verticalpipe.png" />
+</div>
+<div class="wrapper">
+  <div class="block_wrapper" #block_wrapper>
+    <block [block]="block" *ngFor="let block of blocks"></block>
+    <!-- Precache: -->
+    <img src="assets/ufo-block-color-2chip.png" class="hidden" />
+    <img src="assets/ufo-block-color-4chip.png" class="hidden" />
+  </div>
+  <ball [position]="ballPosition"></ball>
+  <platform [pos_x]="platformX"></platform>
+  <div class="test">
+    <div class="debug"
+         *ngFor="let block of blocks"
+         [style.left]="convertPos(block.pos, true).x - 5 + 'px'"
+         [style.top]="convertPos(block.pos, true).y - 5 + 'px'"></div>
+    <div class="debug"
+         [style.left]="convertPerX(ballPosition.x, false) - 5 + 'px'"
+         [style.top]="convertPerY(ballPosition.y, false) - 5 + 'px'"></div>
+  </div>
+</div>
