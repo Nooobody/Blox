@@ -64,7 +64,7 @@ export class PlayAreaComponent implements OnInit {
   ngOnInit() {
     this.updateSize();
 
-    let blocks = Levels.level5();
+    let blocks = Levels.level1();
     for (let block of blocks) {
       this.addNewBlock(block);
     }
@@ -343,7 +343,7 @@ export class PlayAreaComponent implements OnInit {
       this.pause = !this.pause;
     }
     else {
-      
+
     }
   }
 
