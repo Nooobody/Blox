@@ -3,7 +3,7 @@
 <img class="vertical_right" src="assets/ui/verticalpipe.png" />
 <img class="horizontal" src="assets/ui/verticalpipe.png" />
 </div>
-<div class="wrapper" (window:resize)="updateSize()">
+<div class="wrapper" (window:resize)="updateSize()" *ngIf="!mainMenu">
   <div class="block_wrapper" #block_wrapper>
     <block [block]="block" [size]="blockSize" *ngFor="let block of blocks"></block>
     <!-- Precache: -->
@@ -23,8 +23,8 @@
   </div> -->
 </div>
 <div class="pause_menu" *ngIf="pause">
-  <pause (unPauseEmitter)="unPause()"></pause>
+  <pause (unPauseEmitter)="unPause()" (exitEmitter)="exit()"></pause>
 </div>
-<div class="main_menu" *ngIf="false">
-  <main-menu></main-menu>
+<div class="main_menu" *ngIf="mainMenu">
+  <main-menu (levelSelected)="setLevel($event)" [firstTime]="timer"></main-menu>
 </div>

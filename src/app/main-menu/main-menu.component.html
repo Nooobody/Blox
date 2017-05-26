@@ -1,3 +1,13 @@
-<p>
-  main-menu works!
-</p>
+<div class="title_screen" *ngIf="!level_selection">
+  <div class="logo">
+    <img src="assets/ui/ufo-logo.png" />
+  </div>
+  <h1 (click)="play()">Play!</h1>
+</div>
+<div class="level_selection" *ngIf="level_selection">
+  <div class="wrapper">
+    <div *ngFor="let level of level_data" (click)="setLevel(level)" class="level">
+      {{level}}
+    </div>
+  </div>
+</div>

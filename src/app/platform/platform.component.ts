@@ -21,6 +21,9 @@ export class PlatformComponent implements OnInit {
   }
 
   ngOnChanges(changes) {
+    if (!changes.pos_x) {
+      return;
+    }
     let currentV = changes.pos_x.previousValue;
     let newV = changes.pos_x.currentValue;
     if (newV > currentV) {

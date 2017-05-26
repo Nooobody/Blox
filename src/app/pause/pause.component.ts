@@ -8,6 +8,7 @@ import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 export class PauseComponent implements OnInit {
 
   @Output() unPauseEmitter: EventEmitter<boolean> = new EventEmitter<boolean>();
+  @Output() exitEmitter: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   constructor() { }
 
@@ -16,5 +17,9 @@ export class PauseComponent implements OnInit {
 
   private unPause() {
     this.unPauseEmitter.emit(true);
+  }
+
+  private exit() {
+    this.exitEmitter.emit(true);
   }
 }

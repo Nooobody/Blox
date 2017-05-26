@@ -1,0 +1,39 @@
+.logo
+  text-align: center
+  margin-top: -100px
+  margin-bottom: -100px
+
+h1
+  text-align: center
+  font-family: Chewy
+  font-size: 60px
+  color: #777
+  cursor: pointer
+  &:hover
+    color: #999
+
+.level_selection
+  padding: 40px
+  padding-right: 40px
+  width: 95%
+  height: 100%
+
+.level
+  width: 8%
+  padding: 40px
+  margin: 20px
+  border: 4px solid #777
+  border-radius: 20px
+  background-color: #ccc
+  font-family: Chewy
+  font-size: 30px
+  text-align: center
+  float: left
+
+$levels: 6
+@for $i from 0 to $levels
+  .level:nth-child(#{$i})
+    background-color: #4A4
+    cursor: pointer
+    &:hover
+      background-color: #6F6
