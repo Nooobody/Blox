@@ -1,8 +1,8 @@
-import { Position } from '../position.interface';
+import { Vector } from '../vector';
 
 export interface Block {
     id: number;
-    pos: Position;
+    pos: Vector;
     health: number;
     color: number;
 }

@@ -1,6 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
-import { Position } from '../position.interface';
 
 @Component({
   selector: 'block',

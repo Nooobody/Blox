@@ -1,8 +1,9 @@
 import { Component, OnInit, HostListener, ViewChild } from '@angular/core';
 import { Observable } from 'rxjs/Rx';
 import { Block } from '../block/block';
-import { Position } from '../position.interface';
 import Levels from '../levels';
+
+import { Vector } from '../vector';
 
 import { BlockComponent } from '../block/block.component';
 import { BallComponent } from '../ball/ball.component';
@@ -11,9 +12,6 @@ import { PlatformComponent } from '../platform/platform.component';
 let degrees = 45 * (Math.PI / 180);
 let sin = Math.sin(degrees);
 let cos = Math.cos(degrees);
-
-let squareHalfWidth = 35;
-let ballRadius = 15;
 
 let scales = {
   resolution: {w: 1910, h: 965},
@@ -48,15 +46,19 @@ export class PlayAreaComponent implements OnInit {
   private wrapperWidth : number;
   private wrapperHeight : number;
 
+  private ballRadius : number = 20;
+  private squareHalfWidth : number = 35;
   private platformSize : number;
   private blockSize : number;
   private ballSize : number;
 
   private ballMultiplier = 1.0;
 
+  private collisionDebug = [];
+
   private blocks : Block[] = [];
-  private ballVelocity : Position = {x: this.ballX, y: this.ballY};
-  private ballPosition : Position = {x: 50, y: 50};
+  private ballVelocity : Vector = new Vector(this.ballX, this.ballY);
+  private ballPosition : Vector = new Vector(50, 50);
   private platformX : number = 50;
 
   private highestID = 0;
@@ -71,8 +73,6 @@ export class PlayAreaComponent implements OnInit {
   private startGame() {
     this.updateSize();
 
-    this.ballPosition = {x: 50, y: 50};
-    this.ballVelocity = {x: this.ballX, y: this.ballY};
     if (!this.timer) {
       this.timer = Observable.timer(100, 20);  // Our ball timer.  TODO: Pause for menu
       this.timer.subscribe(t => {
@@ -80,8 +80,7 @@ export class PlayAreaComponent implements OnInit {
           return;
         }
 
-        this.ballPosition.x += this.ballVelocity.x;
-        this.ballPosition.y += this.ballVelocity.y;
+        this.ballPosition = this.ballPosition.add(this.ballVelocity);
         this.checkCollisions(this.ballPosition);
       });
     }
@@ -93,8 +92,7 @@ export class PlayAreaComponent implements OnInit {
       this.addNewBlock(block);
     }
 
-    this.ballPosition = {x: 50, y: 50};
-    this.ballVelocity = {x: this.ballX, y: this.ballY};
+    this.spawnBall();
     this.mainMenu = false;
     let timer = Observable.timer(50);
     timer.subscribe(() => {
@@ -127,14 +125,26 @@ export class PlayAreaComponent implements OnInit {
     this.ballSize = scales.ball * scaleX;
     this.blockSize = scales.block * scaleX;
 
-    ballRadius = this.ballSize * 0.75;
-    squareHalfWidth = (this.blockSize / 2) * 0.5;
+    this.ballRadius = this.ballSize * 0.5;
+    this.squareHalfWidth = (this.blockSize / 2);
   }
 
   private addNewBlock(block) {
     block.id = this.highestID;
     this.highestID += 1;
+    block.pos = new Vector(block.pos.x, block.pos.y);
     this.blocks.push(block);
+  }
+
+  private spawnBall() {
+    this.resetMultiplier();
+    let randomSpawn = Math.random() * 80 + 10;
+    let xVel = Math.random() * 0.4 + 0.3;
+    xVel *= Math.random() > 0.5 ? -1 : 1;
+    this.ballPosition = new Vector(randomSpawn, 55);
+    this.ballVelocity = new Vector(xVel, 1.0 - Math.abs(xVel));
+    this.ballVelocity.print();
+    this.lastHit = -1;
   }
 
   private checkCollisions(ball) {
@@ -153,17 +163,13 @@ export class PlayAreaComponent implements OnInit {
       this.lastHit = -1;
     }
     else if (ball.y > 96) { // Are we dead?
-      this.resetMultiplier();
-      let randomSpawn = Math.random() * 80 + 10;
-      this.ballPosition = {x: randomSpawn, y: 50};
-      this.ballVelocity = {x: Math.random() * 1.6 - 0.8, y: this.ballY};
-      this.lastHit = -1;
+      this.spawnBall();
       return;
     }
 
-    if (ball.y < 50) {  // Maximum altitude for blocks?
+    if (ball.y < 55) {  // Maximum altitude for blocks?
       for (let block of this.blocks) {
-        if (this.dist_2d(block.pos, this.ballPosition) < 10 && block.id !== this.lastHit) { // Do not calculate if we are too far away.
+        if (block.pos.dist(this.ballPosition) < 10 && block.id !== this.lastHit) { // Do not calculate if we are too far away.
           // Calculate collision here.
           if (this.checkBlockCollision(block.pos, this.ballPosition)) {
             // Collision happened!
@@ -184,17 +190,24 @@ export class PlayAreaComponent implements OnInit {
             // let xDiff = this.diff(realBall.x, blockPixels.x);   // Corners are calculated by the difference to the middle point of the square.
             // let yDiff = this.diff(realBall.y, blockPixels.y);
 
-            let cornerWidth = squareHalfWidth / 1.5;
+            let delta = new Vector(blockPixels.x - realBall.x, blockPixels.y - realBall.y);
+            let length = delta.length();
 
-            let leftC = {x: blockPixels.x - squareHalfWidth, y: blockPixels.y};
-            let rightC = {x: blockPixels.x + squareHalfWidth, y: blockPixels.y};
-            let upC = {x: blockPixels.x, y: blockPixels.y - squareHalfWidth};
-            let downC = {x: blockPixels.x, y: blockPixels.y + squareHalfWidth};
+            let testVec = blockPixels.copy().sub(delta);
 
-            let leftDist = this.dist_2d(realBall, leftC);
-            let rightDist = this.dist_2d(realBall, rightC);
-            let upDist = this.dist_2d(realBall, upC);
-            let downDist = this.dist_2d(realBall, downC);
+            testVec = testVec.add(delta.div_scalar(length).mul_scalar(this.ballRadius));
+
+            let cornerWidth = this.squareHalfWidth / 1.5;
+
+            let leftC = new Vector(blockPixels.x - this.squareHalfWidth, blockPixels.y);
+            let rightC = new Vector(blockPixels.x + this.squareHalfWidth, blockPixels.y);
+            let upC = new Vector(blockPixels.x, blockPixels.y - this.squareHalfWidth);
+            let downC = new Vector(blockPixels.x, blockPixels.y + this.squareHalfWidth);
+
+            let leftDist = testVec.dist(leftC);
+            let rightDist = testVec.dist(rightC);
+            let upDist = testVec.dist(upC);
+            let downDist = testVec.dist(downC);
 
             // console.log("LeftDist: " + leftDist);
             // console.log("RightDist: " + rightDist);
@@ -219,43 +232,44 @@ export class PlayAreaComponent implements OnInit {
             let upLeft = (dists[0] === leftDist || dists[0] === upDist) && (dists[1] === leftDist || dists[1] === upDist);
             let upRight = (dists[0] === rightDist || dists[0] === upDist) && (dists[1] === rightDist || dists[1] === upDist);
 
-            if (realBall.x < leftC.x && dists[0] === leftDist && leftDist <= cornerWidth + ballRadius) {  // Left Corner
+            if (realBall.x < leftC.x && this.ballVelocity.x > 0 && dists[0] === leftDist && leftDist < this.ballRadius) {  // Left Corner
               this.ballVelocity.x *= -1;
               console.log("Left corner");
             }
-            else if (realBall.x > rightC.x && dists[0] === rightDist && rightDist <= cornerWidth) {  // Right Corner
+            else if (realBall.x > rightC.x && this.ballVelocity.x < 0 && dists[0] === rightDist && rightDist < this.ballRadius) {  // Right Corner
               this.ballVelocity.x *= -1;
               console.log("Right corner");
             }
-            else if (realBall.y < upC.y && dists[0] === upDist && upDist <= cornerWidth) {  // Up Corner
+            else if (realBall.y < upC.y && this.ballVelocity.y > 0 && dists[0] === upDist && upDist < this.ballRadius) {  // Up Corner
               this.ballVelocity.y *= -1;
               console.log("Up corner");
             }
-            else if (realBall.y > downC.y && dists[0] === downDist && downDist <= cornerWidth) {  // Down Corner
+            else if (realBall.y > downC.y && this.ballVelocity.y < 0 && dists[0] === downDist && downDist < this.ballRadius) {  // Down Corner
               this.ballVelocity.y *= -1;
+
               console.log("Down corner");
             }
             // Source: https://gamedev.stackexchange.com/questions/23672/determine-resulting-angle-of-wall-collision
             else if (downLeft) { // Down left
-              let norm = {x: 1, y: -1};
+              let norm = new Vector(1, -1);
               this.ballVelocity = this.calc_angle(norm, this.ballVelocity);
 
               console.log("Down left");
             }
             else if (downRight) { // Down right
-              let norm = {x: -1, y: -1};
+              let norm = new Vector(-1, -1);
               this.ballVelocity = this.calc_angle(norm, this.ballVelocity);
 
               console.log("Down right");
             }
             else if (upLeft) { // Up left
-              let norm = {x: 1, y: 1};
+              let norm = new Vector(1, 1);
               this.ballVelocity = this.calc_angle(norm, this.ballVelocity);
 
               console.log("Up left");
             }
             else if (upRight) { // Up right
-              let norm = {x: -1, y: 1};
+              let norm = new Vector(-1, 1);
               this.ballVelocity = this.calc_angle(norm, this.ballVelocity);
 
               console.log("Up right");
@@ -274,7 +288,7 @@ export class PlayAreaComponent implements OnInit {
           this.ballVelocity.x = Math.abs(this.ballVelocity.x);
         }
         else if (realBall.x < pixelPlat - this.platformSize / 4) { // Hits the left side
-          this.ballVelocity.x = -Math.abs(this.ballVelocity.x)
+          this.ballVelocity.x = -Math.abs(this.ballVelocity.x);
         }
         // Hitting the center will keep X in the same direction.
         this.ballVelocity.y = -Math.abs(this.ballVelocity.y);
@@ -293,29 +307,56 @@ export class PlayAreaComponent implements OnInit {
     let cx = cos * (realBall.x - realBlock.x) - sin * (realBall.y - realBlock.y) + realBlock.x;
     let cy = sin * (realBall.x - realBlock.x) + cos * (realBall.y - realBlock.y) + realBlock.y;
 
+    let unRotatedBall = new Vector(cx, cy);
+
+    let closestPoint;
     let x, y;
-    if (cx < realBlock.x - squareHalfWidth) {
-      x = realBlock.x - squareHalfWidth;
+    if (cx < realBlock.x - this.squareHalfWidth) {
+      x = realBlock.x - this.squareHalfWidth;
     }
-    else if (cx > realBlock.x + squareHalfWidth) {
-      x = realBlock.x + squareHalfWidth;
+    else if (cx > realBlock.x + this.squareHalfWidth) {
+      x = realBlock.x + this.squareHalfWidth;
     }
     else {
       x = cx;
     }
 
-    if (cy < realBlock.y - squareHalfWidth) {
-      y = realBlock.y - squareHalfWidth
+    if (cy < realBlock.y - this.squareHalfWidth) {
+      y = realBlock.y - this.squareHalfWidth
     }
-    else if (cy > realBlock.y + squareHalfWidth) {
-      y = realBlock.y + squareHalfWidth;
+    else if (cy > realBlock.y + this.squareHalfWidth) {
+      y = realBlock.y + this.squareHalfWidth;
     }
     else {
       y = cy;
     }
+    closestPoint = new Vector(x, y);
 
-    let dist = this.dist_2d({x: cx, y: cy}, {x: x, y: y});
-    if (dist < ballRadius) {
+    let dist = unRotatedBall.dist(closestPoint);
+    if (dist < this.ballRadius) {
+
+      // let deltaX = realBlock.x - realBall.x;
+      // let deltaY = realBlock.y - realBall.y;
+      //
+      // let testvec = {x: realBlock.x - deltaX, y: realBlock.y - deltaY}
+      //
+      // let length = this.vec_length({x: deltaX, y: deltaY});
+      //
+      // testvec.x += (deltaX / length) * this.ballRadius;
+      // testvec.y += (deltaY / length) * this.ballRadius;
+
+      let delta = new Vector(realBlock.x - realBall.x, realBlock.y - realBall.y);
+      let length = delta.length();
+
+      let testVec = realBlock.copy().sub(delta);
+
+      testVec = testVec.add(delta.div_scalar(length).mul_scalar(this.ballRadius));
+
+      this.collisionDebug.push(testVec);
+      Observable.timer(2000).subscribe(() => {
+        this.collisionDebug.shift();
+      })
+      console.log(this.collisionDebug);
       return true;
     }
     return false;
@@ -327,22 +368,16 @@ export class PlayAreaComponent implements OnInit {
   }
 
   private setMultiplier() {
-    this.ballMultiplier += 0.02;
+    this.ballMultiplier += 0.002;
     this.setSpeed();
   }
 
-  private dist_2d(pos1, pos2) {
-    let dx = pos2.x - pos1.x;
-    let dy = pos2.y - pos1.y;
-    return Math.sqrt(dx * dx + dy * dy);
-  }
-
   private setSpeed() {
-    this.mul_scalar(this.ballVelocity, this.ballMultiplier);
+    this.ballVelocity = this.ballVelocity.unit().mul_scalar(this.ballMultiplier);
   }
 
   private convertPos(pos, isBlock) {
-    return {x: this.convertPerX(pos.x, isBlock), y: this.convertPerY(pos.y, isBlock)};
+    return new Vector(this.convertPerX(pos.x, isBlock), this.convertPerY(pos.y, isBlock));
   }
 
   private diff(num1, num2) {
@@ -374,33 +409,13 @@ export class PlayAreaComponent implements OnInit {
   }
 
   private calc_angle(norm, vel) {
-    let dot = this.dot(vel, norm);
+    let dot = vel.dot(norm);
 
-    let result = this.sub_vec(vel, this.mul_scalar(norm, dot));
+    let result = vel.sub(norm.mul_scalar(dot));
     // result.y *= -1;
     // console.log("Before: " + vel.x + " / " + vel.y);
     // console.log("After: " + result.x + " / " + result.y);
     return result;
-  }
-
-  private mul_scalar(vec1, scalar) {
-    return {x: vec1.x * scalar, y: vec1.y * scalar};
-  }
-
-  private mul_vec(vec1, vec2) {
-    return {x: vec1.x * vec2.x, y: vec1.y * vec2.y};
-  }
-
-  private add_vec(vec1, vec2) {
-    return {x: vec1.x + vec2.x, y: vec1.y + vec2.y};
-  }
-
-  private sub_vec(vec1, vec2) {
-    return {x: vec1.x - vec2.x, y: vec1.y - vec2.y};
-  }
-
-  private dot(vec1, vec2) {
-    return vec1.x * vec2.x + vec1.y * vec2.y;
   }
 
   private movePlatform(x) {

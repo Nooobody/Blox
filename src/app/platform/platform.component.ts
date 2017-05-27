@@ -1,6 +1,5 @@
 import { Component, OnInit, Input, OnChanges } from '@angular/core';
 import { Observable } from 'rxjs/Rx';
-import { Position } from '../position.interface';
 
 @Component({
   selector: 'platform',

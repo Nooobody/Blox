@@ -1,7 +1,7 @@
 <div class="pipe_wrapper">
   <img class="vertical_left" src="assets/ui/verticalpipe.png" />
-  <img class="vertical_right" src="assets/ui/verticalpipe.png" />
-  <img class="horizontal" src="assets/ui/verticalpipe.png" />
+  <img class="vertical_right" src="assets/ui/verticalpipe-invert.png" />
+  <img class="horizontal" src="assets/ui/horizontalpipe.png" />
 </div>
 <div class="wrapper" (window:resize)="updateSize()" *ngIf="!mainMenu">
   <div class="pause_btn" (click)="fPause()" *ngIf="!pause">
@@ -12,13 +12,27 @@
   <ball [position]="ballPosition" [size]="ballSize" [pause]="pause"></ball>
   <platform [pos_x]="platformX" [size]="platformSize"></platform>
   <!-- <div class="test">
+   <div class="debug"
+        *ngFor="let point of collisionDebug"
+        [style.background-color]="'lightgreen'"
+        [style.left]="point.x - 5 + 'px'"
+        [style.top]="point.y - 5 + 'px'" ></div>
     <div class="debug"
          *ngFor="let block of blocks"
          [style.left]="convertPos(block.pos, true).x - 5 + 'px'"
          [style.top]="convertPos(block.pos, true).y - 5 + 'px'"></div>
     <div class="debug"
+         *ngFor="let block of blocks"
+         [style.left]="convertPos(block.pos, true).x - 5 + 'px'"
+         [style.top]="convertPos(block.pos, true).y + squareHalfWidth - 5 + 'px'"></div>
+    <div class="debug"
          [style.left]="convertPerX(ballPosition.x, false) - 5 + 'px'"
          [style.top]="convertPerY(ballPosition.y, false) - 5 + 'px'"></div>
+    <div class="debugcirc"
+         [style.left]="convertPerX(ballPosition.x, false) - ballRadius + 'px'"
+         [style.top]="convertPerY(ballPosition.y, false) - ballRadius + 'px'"
+         [style.width]="ballRadius * 2"
+         [style.height]="ballRadius * 2"></div>
   </div> -->
 </div>
 <div class="pause_menu" *ngIf="pause">

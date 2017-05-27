@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Observable } from 'rxjs/Rx';
-import { Position } from '../position.interface';
+import { Vector } from '../vector';
 
 @Component({
   selector: 'ball',
@@ -8,7 +8,7 @@ import { Position } from '../position.interface';
   styleUrls: ['./ball.component.sass']
 })
 export class BallComponent implements OnInit {
-  @Input() position : Position;
+  @Input() position : Vector;
   @Input() size;
   @Input() pause;
 
