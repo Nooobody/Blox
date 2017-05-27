@@ -1,3 +1,8 @@
+.title_screen, .level_selection
+  background-color: #111142
+  padding: 20px
+  height: 100%
+
 .logo
   text-align: center
   margin-top: -100px
@@ -7,15 +12,17 @@ h1
   text-align: center
   font-family: Chewy
   font-size: 60px
-  color: #777
+  color: #222
   cursor: pointer
+  text-shadow: 0px 0px 8px #fff
   &:hover
-    color: #999
+    color: #444
+  &:active
+    color: #000
 
 .level_selection
   padding: 40px
-  padding-right: 40px
-  width: 95%
+  width: 96%
   height: 100%
 
 .level
@@ -37,3 +44,5 @@ $levels: 6
     cursor: pointer
     &:hover
       background-color: #6F6
+    &:active
+      background-color: #282

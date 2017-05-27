@@ -22,7 +22,7 @@ export class BallComponent implements OnInit {
       if (this.pause) {
         return;
       }
-      
+
       this.trails.forEach((part, index, arr) => {
         arr[index].size -= this.size / 10;
       });
@@ -30,7 +30,7 @@ export class BallComponent implements OnInit {
       let pos = JSON.parse(JSON.stringify({x: this.position.x, y: this.position.y}));
       this.trails.push({
         position: pos,
-        size: this.size
+        size: this.size || 20
       });
 
       if (this.trails.length > 7) {

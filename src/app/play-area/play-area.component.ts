@@ -93,6 +93,8 @@ export class PlayAreaComponent implements OnInit {
       this.addNewBlock(block);
     }
 
+    this.ballPosition = {x: 50, y: 50};
+    this.ballVelocity = {x: this.ballX, y: this.ballY};
     this.mainMenu = false;
     let timer = Observable.timer(50);
     timer.subscribe(() => {
@@ -182,7 +184,7 @@ export class PlayAreaComponent implements OnInit {
             // let xDiff = this.diff(realBall.x, blockPixels.x);   // Corners are calculated by the difference to the middle point of the square.
             // let yDiff = this.diff(realBall.y, blockPixels.y);
 
-            let cornerWidth = squareHalfWidth / 2;
+            let cornerWidth = squareHalfWidth / 1.5;
 
             let leftC = {x: blockPixels.x - squareHalfWidth, y: blockPixels.y};
             let rightC = {x: blockPixels.x + squareHalfWidth, y: blockPixels.y};
@@ -425,10 +427,14 @@ export class PlayAreaComponent implements OnInit {
     this.pause = false;
   }
 
+  private fPause() {
+    this.pause = !this.pause;
+  }
+
   @HostListener('document:keypress', ['$event'])
   onKeyPress(event: KeyboardEvent) {
     if (event.code === "Space" && !this.mainMenu) {
-      this.pause = !this.pause;
+      this.fPause();
     }
     else {
 

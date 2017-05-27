@@ -1,14 +1,13 @@
 <div class="pipe_wrapper">
-<img class="vertical_left" src="assets/ui/verticalpipe.png" />
-<img class="vertical_right" src="assets/ui/verticalpipe.png" />
-<img class="horizontal" src="assets/ui/verticalpipe.png" />
+  <img class="vertical_left" src="assets/ui/verticalpipe.png" />
+  <img class="vertical_right" src="assets/ui/verticalpipe.png" />
+  <img class="horizontal" src="assets/ui/verticalpipe.png" />
 </div>
 <div class="wrapper" (window:resize)="updateSize()" *ngIf="!mainMenu">
+  <div class="pause_btn" (click)="fPause()" *ngIf="!pause">
+  </div>
   <div class="block_wrapper" #block_wrapper>
     <block [block]="block" [size]="blockSize" *ngFor="let block of blocks"></block>
-    <!-- Precache: -->
-    <img src="assets/ufo-block-color-2chip.png" class="hidden" />
-    <img src="assets/ufo-block-color-4chip.png" class="hidden" />
   </div>
   <ball [position]="ballPosition" [size]="ballSize" [pause]="pause"></ball>
   <platform [pos_x]="platformX" [size]="platformSize"></platform>
@@ -28,3 +27,13 @@
 <div class="main_menu" *ngIf="mainMenu">
   <main-menu (levelSelected)="setLevel($event)" [firstTime]="timer"></main-menu>
 </div>
+
+<!-- Precache: -->
+<img src="assets/ufo-block-color-2chip.png" class="hidden" />
+<img src="assets/ufo-block-color-4chip.png" class="hidden" />
+<img src="assets/ui/ufo-button-play.png" class="hidden" />
+<img src="assets/ui/ufo-button-play-hover.png" class="hidden" />
+<img src="assets/ui/ufo-button-pause.png" class="hidden" />
+<img src="assets/ui/ufo-button-pause-hover.png" class="hidden" />
+<img src="assets/ui/ufo-button-quit.png" class="hidden" />
+<img src="assets/ui/ufo-button-quit-hover.png" class="hidden" />

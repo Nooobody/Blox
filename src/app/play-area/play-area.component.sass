@@ -1,6 +1,7 @@
 .wrapper
   width: 100vw
   height: 100vh
+  background-color: #111142
 
 .block_wrapper
   position: absolute
@@ -13,9 +14,11 @@
   position: absolute
   left: 0
   top: 0
+  z-index: 100
   overflow: hidden
   width: 100vw
   height: 100vh
+  pointer-events: none
   img
     position: absolute
 
@@ -33,7 +36,7 @@
 
 .horizontal
   transform: rotate(90deg)
-  bottom: -10px
+  bottom: -1.9%
   left: 49%
   width: 2%
   height: 200%
@@ -48,9 +51,27 @@
 .hidden
   display: none
 
+.pause_btn
+  background-image: url("/assets/ui/ufo-button-pause.png")
+  background-size: 100%
+  position: absolute
+  width: 40px
+  height: 40px
+  z-index: 200
+  top: 10px
+  left: 10px
+  cursor: pointer
+
+  &:hover
+    background-image: url("/assets/ui/ufo-button-pause-hover.png")
+
+  &:active
+    background-image: url("/assets/ui/ufo-button-pause.png")
+    filter: brightness(50%)
+
 .pause_menu, .main_menu
   position: absolute
-  left: 0
-  top: 0
-  width: 100%
-  height: 100%
+  left: 2%
+  top: 2%
+  width: 96%
+  height: 96%
