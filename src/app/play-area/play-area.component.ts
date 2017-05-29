@@ -82,7 +82,7 @@ export class PlayAreaComponent implements OnInit {
     if (!this.timer) {
       this.timer = Observable.timer(100, 20);  // Our ball timer.  TODO: Pause for menu
       this.timer.subscribe(t => {
-        if (this.pause) {
+        if (this.pause || this.mainMenu) {
           return;
         }
 
