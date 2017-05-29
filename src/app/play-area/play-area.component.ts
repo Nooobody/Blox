@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener, ViewChild } from '@angular/core';
+import { Component, OnInit, HostListener, ViewChild, ViewChildren } from '@angular/core';
 import { Observable } from 'rxjs/Rx';
 import { Block } from '../block/block';
 import Levels from '../levels';
@@ -63,7 +63,13 @@ export class PlayAreaComponent implements OnInit {
 
   private highestID = 0;
 
+  @ViewChildren('blocks') blockComponents;
   @ViewChild('block_wrapper') blockWrapper;
+
+  @ViewChild('batHit') sound_BatHit;
+  @ViewChild('tileBreak') sound_TileBreak;
+  @ViewChild('tileHit') sound_TileHit;
+  @ViewChild('wallHit') sound_WallHit;
 
   constructor() { }
 
@@ -104,6 +110,7 @@ export class PlayAreaComponent implements OnInit {
     this.blocks = [];
     this.pause = false;
     this.mainMenu = true;
+    this.highestID = 0;
   }
 
   private updateSize() {  // Triggers on window resize.
@@ -152,15 +159,18 @@ export class PlayAreaComponent implements OnInit {
     if (realBall.x < this.convertPerX(2, false) + this.ballSize / 2) { // Left wall
       this.ballVelocity.x = Math.abs(this.ballVelocity.x);
       this.lastHit = -1;
+      this.sound_WallHit.nativeElement.play();
     }
     else if (realBall.x > this.convertPerX(98, false) - this.ballSize / 2) { // Right wall
       this.ballVelocity.x = -Math.abs(this.ballVelocity.x);
       this.lastHit = -1;
+      this.sound_WallHit.nativeElement.play();
     }
 
     if (realBall.y < this.convertPerY(2, false) + this.ballSize / 2) { // Ceiling
       this.ballVelocity.y = Math.abs(this.ballVelocity.y);
       this.lastHit = -1;
+      this.sound_WallHit.nativeElement.play();
     }
     else if (ball.y > 96) { // Are we dead?
       this.spawnBall();
@@ -175,6 +185,20 @@ export class PlayAreaComponent implements OnInit {
             // Collision happened!
             block.health -= 1;
             this.lastHit = block.id;
+
+            for (let blockComponent of this.blockComponents._results) {
+              if (blockComponent.block.id === block.id) {
+                blockComponent.gotHit();
+                break;
+              }
+            }
+
+            if (block.health > 0) {
+              this.sound_TileHit.nativeElement.play();
+            }
+            else {
+              this.sound_TileBreak.nativeElement.play();
+            }
 
             // Get the corner cases first.
             // Corners need pixels.
@@ -292,6 +316,8 @@ export class PlayAreaComponent implements OnInit {
         }
         // Hitting the center will keep X in the same direction.
         this.ballVelocity.y = -Math.abs(this.ballVelocity.y);
+
+        this.sound_BatHit.nativeElement.play();
 
         this.setMultiplier();
         this.lastHit = -2;

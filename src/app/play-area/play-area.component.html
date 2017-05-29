@@ -4,10 +4,22 @@
   <img class="horizontal" src="assets/ui/horizontalpipe.png" />
 </div>
 <div class="wrapper" (window:resize)="updateSize()" *ngIf="!mainMenu">
+  <audio #batHit preload="true">
+    <source src="assets/sounds/batHit.wav" type="audio/wav">
+  </audio>
+  <audio #tileBreak preload="true">
+    <source src="assets/sounds/tileBreak.wav" type="audio/wav">
+  </audio>
+  <audio #tileHit preload="true">
+    <source src="assets/sounds/tileHit.wav" type="audio/wav">
+  </audio>
+  <audio #wallHit preload="true">
+    <source src="assets/sounds/wallHit.wav" type="audio/wav">
+  </audio>
   <div class="pause_btn" (click)="fPause()" *ngIf="!pause">
   </div>
   <div class="block_wrapper" #block_wrapper>
-    <block [block]="block" [size]="blockSize" *ngFor="let block of blocks"></block>
+    <block [block]="block" #blocks [size]="blockSize" *ngFor="let block of blocks"></block>
   </div>
   <ball [position]="ballPosition" [size]="ballSize" [pause]="pause"></ball>
   <platform [pos_x]="platformX" [size]="platformSize"></platform>
